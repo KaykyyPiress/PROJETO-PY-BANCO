@@ -57,6 +57,25 @@ def apaga_cliente():
                 return
     print("Cliente não encontrado.")
 
+def transferencia():
+    cpf_origem = input("Digite o CPF do cliente que irá transferir: ")
+    for cliente_origem in clientes:
+        if cliente_origem["cpf"] == cpf_origem:
+            cpf_destino = input("Digite o CPF do destinatário: ")
+            for cliente_destino in clientes:
+                if cliente_destino["cpf"] == cpf_destino:
+                    valor_transferencia = float(input("Qual o valor a ser transferido? "))
+                    if valor_transferencia > cliente_origem["deposito"]:
+                        print("Saldo insuficiente.")
+                    else:
+                        cliente_origem["deposito"] -= valor_transferencia
+                        cliente_destino["deposito"] += valor_transferencia
+                        print(f"Transferência de R${valor_transferencia:.2f} realizada com sucesso da conta de {cliente_origem['nome']} para a conta de {cliente_destino['nome']}.")
+                    return
+            print("Destinatário não encontrado.")
+            return
+    print("Cliente não encontrado.")
+
 def deposito():
     cpf = input("Digite o CPF do cliente: ")
     for cliente in clientes:
