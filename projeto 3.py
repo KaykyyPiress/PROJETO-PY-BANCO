@@ -26,8 +26,8 @@ def cadastro():
 
 def listar_clientes():
     print("Lista de clientes cadastrados:")
-    for cliente in clientes:
-        print(f"Nome: {cliente['nome']}, CPF: {cliente['cpf']}, Tipo de conta: {cliente['tipo conta']}, Saldo: R${cliente['deposito']:.2f}")
+    for x in clientes:
+        print(f"Nome: {x['nome']}, CPF: {x['cpf']}, Tipo de conta: {x['tipo conta']}, Saldo: R${x['deposito']:.2f}")
 
 def debito():
     cpf = input("Digite o CPF do cliente: ")
@@ -66,7 +66,6 @@ def deposito():
             print(f"Depósito de R${valor_deposito:.2f} realizado com sucesso na conta de {cliente['nome']}.")
             return
     print("Cliente não encontrado.")
-
     
 #FUNÇÃO MENU PRINCIPAL
 def menu():
