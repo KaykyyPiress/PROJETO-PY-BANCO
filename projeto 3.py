@@ -3,7 +3,6 @@ from datetime import datetime
 #lista para criar os clientes
 clientes = []
 
-
 #função que chama o cadastro com as perguntas
 def cadastro():
     #pede os dados para o cliente
@@ -27,19 +26,37 @@ def cadastro():
     print(pessoa)
     print("Registrado com sucesso!")
 
-def extrato():
-    cpf = input("Digite o CPF do cliente: ")
+def autenticar():
+    cpf = input("Digite seu CPF: ")
+    senha = input("Digite sua senha: ")
     for cliente in clientes:
-        if cliente["cpf"] == cpf:
-            print(f"Extrato bancário de {cliente['nome']}:")
-            for operacao in cliente["extrato"]:
-                data_hora = datetime.strptime(operacao["data_hora"], "%Y-%m-%d %H:%M:%S.%f")
-                print(f"{data_hora.day}/{data_hora.month}/{data_hora.year} {data_hora.hour}:{data_hora.minute}:{data_hora.second} - {operacao['descricao']} - R${operacao['valor']:.2f}")
-            return
-    print("Cliente não encontrado.")
+        if cliente["cpf"] == cpf and cliente["senha"] == senha:
+            return cliente
+    return None
+
+def extrato():
+    cliente = autenticar()
+    if cliente is None:
+        print("CPF ou senha inválidos. Tente novamente.")
+        return
+    print(f"Extrato de {cliente['nome']}:")
+    print(f"Saldo atual: R${cliente['deposito']:.2f}")
+    for acontecimento in cliente['historico']:
+        if acontecimento['tipo'] == 'DEPOSITO':
+            print(f"Depósito: R${acontecimento['valor']:.2f}")
+        elif acontecimento['tipo'] == 'DEBITO':
+            print(f"Débito: R${acontecimento['valor']:.2f}")
+        elif acontecimento['tipo'] == 'TRANSFERENCIA':
+            print(f"Transferência para {acontecimento['destino']}: R${acontecimento['valor']:.2f}")
+
+
+
+def operacao_livre():
+    print("ERRRRROO")
 
 def listar_clientes():
     print("Lista de clientes cadastrados:")
+    #percorre a lista clientes
     for x in clientes:
         print(f"Nome: {x['nome']}, CPF: {x['cpf']}, Tipo de conta: {x['tipo conta']}, Saldo: R${x['deposito']:.2f}")
 
@@ -103,9 +120,9 @@ def deposito():
 #FUNÇÃO MENU PRINCIPAL
 def menu():
     while True:
-        print("BEM VINDO AO BANCO TISTRESA: ")
-        opcao = int(input("1. Registrar Cliente\n2. Apagar Cliente\n3. Mostrar Clientes\n4. Débito\n5. Depósito\n6.Extrato\n7.Transferência\n8.Operação livre\n9. Sair\n")) 
-        
+        print("BEM VINDO AO BANCO TISTRESA: ") 
+        opcao = int(input("1. Registrar Cliente\n2. Apagar Cliente\n3. Mostrar Clientes\n4. Débito\n5. Depósito\n6. Extrato\n7. Transferência\n8. Operação livre\n9. Sair\n")) 
+        #vê qual opção que a pessoa digitou
         if opcao == 1:
             cadastro()
             fim = input("Deseja Sair? S/N ")
