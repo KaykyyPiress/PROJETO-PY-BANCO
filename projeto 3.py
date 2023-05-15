@@ -1,9 +1,12 @@
+from datetime import datetime
+
 #lista para criar os clientes
 clientes = []
 
+
 #função que chama o cadastro com as perguntas
 def cadastro():
-
+    #pede os dados para o cliente
     nome = input("Qual seu nome? ")
     cpf = input("Qual seu CPF? Ex: 123.456.789-10 ")
     conta = input("Qual tipo de conta? Comum ou Plus? ")
@@ -23,6 +26,17 @@ def cadastro():
     clientes.append(pessoa)
     print(pessoa)
     print("Registrado com sucesso!")
+
+def extrato():
+    cpf = input("Digite o CPF do cliente: ")
+    for cliente in clientes:
+        if cliente["cpf"] == cpf:
+            print(f"Extrato bancário de {cliente['nome']}:")
+            for operacao in cliente["extrato"]:
+                data_hora = datetime.strptime(operacao["data_hora"], "%Y-%m-%d %H:%M:%S.%f")
+                print(f"{data_hora.day}/{data_hora.month}/{data_hora.year} {data_hora.hour}:{data_hora.minute}:{data_hora.second} - {operacao['descricao']} - R${operacao['valor']:.2f}")
+            return
+    print("Cliente não encontrado.")
 
 def listar_clientes():
     print("Lista de clientes cadastrados:")
@@ -90,7 +104,7 @@ def deposito():
 def menu():
     while True:
         print("BEM VINDO AO BANCO TISTRESA: ")
-        opcao = int(input("1. Registrar Cliente\n2. Apagar Cliente\n3. Depositar\n4. Mostrar Clientes\n5. Débito\n9. Sair\n")) 
+        opcao = int(input("1. Registrar Cliente\n2. Apagar Cliente\n3. Mostrar Clientes\n4. Débito\n5. Depósito\n6.Extrato\n7.Transferência\n8.Operação livre\n9. Sair\n")) 
         
         if opcao == 1:
             cadastro()
@@ -104,14 +118,23 @@ def menu():
             apaga_cliente()
 
         elif opcao ==3:
-            deposito()
-
-        elif opcao == 4:
             listar_clientes()
 
-        elif opcao == 5:
+        elif opcao == 4:
             debito()
-            
+
+        elif opcao == 5:
+            deposito()
+        
+        elif opcao == 6:
+            extrato()
+        
+        elif opcao == 7:
+            transferencia()
+        
+        elif opcao == 8:
+            operacao_livre()
+
         elif opcao == 9:
             print("Obrigado por usar nosso banco")
             break
@@ -119,4 +142,3 @@ def menu():
         else:
             print("Opção inválida. Tente novamente.")
 menu()
-abs
