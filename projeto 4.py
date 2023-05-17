@@ -14,13 +14,14 @@ def cadastro():
 
     # Cria um dicionário com os dados do cliente
     pessoa = {
-        "nome": nome,
-        "cpf": cpf,
-        "tipo conta": conta,
-        "deposito": deposito,
-        "senha": senha,
-        "historico": []  # Histórico vazio para armazenar as transações
-    }
+    "nome": nome,
+    "cpf": cpf,
+    "tipo conta": conta,
+    "deposito": deposito,
+    "poupanca": 0,  # Saldo da poupança inicialmente zero
+    "senha": senha,
+    "historico": []  # Histórico vazio para armazenar as transações
+}
 
     # Adiciona o dicionário 'pessoa' na lista 'clientes'
     clientes.append(pessoa)
@@ -43,7 +44,8 @@ def extrato():
         print("CPF ou senha inválidos. Tente novamente.")
         return
     print(f"Extrato de {cliente['nome']}:")
-    print(f"Saldo atual: R${cliente['deposito']:.2f}")
+    print(f"Saldo atual na conta: R${cliente['deposito']:.2f}")
+    print(f"Saldo atual na poupança: R${cliente['poupanca']:.2f}")
     for acontecimento in cliente['historico']:
         tipo = acontecimento['tipo']
         valor = acontecimento['valor']
@@ -55,15 +57,36 @@ def extrato():
         elif tipo == 'TRANSFERENCIA':
             destino = acontecimento['destino']
             print(f"Transferência para {destino} no valor de R${valor:.2f} em {horario}")
+    rendimento = calcular_rendimento(cliente)
+    print(f"Rendimento da poupança neste mês: R${rendimento:.2f}")
+
 # Função para realizar operações livres
-def operacao_livre():
-    print("ERRRRROO")  # Ação livre não implementada
+def calcular_rendimento(cliente):
+    taxa_rendimento = 0.01  # Taxa de rendimento da poupança (1% ao mês)
+    rendimento = cliente["poupanca"] * taxa_rendimento
+    cliente["poupanca"] += rendimento
+    return rendimento
 
 # Função para listar os clientes cadastrados
 def listar_clientes():
     print("Lista de clientes cadastrados:")
     for x in clientes:
         print(f"Nome: {x['nome']}, CPF: {x['cpf']}, Tipo de conta: {x['tipo conta']}, Saldo: R${x['deposito']:.2f}")
+
+def deposito_poupanca():
+    print("A poupança rende 1%% ao mês")
+    continuar = input("Deseja continuar? Sim/Não\n")
+    if continuar.upper() == "SIM":
+        cpf = input("Digite o CPF do cliente: ")
+        for cliente in clientes:
+            if cliente["cpf"] == cpf:
+                valor_deposito = float(input("Qual o valor a ser depositado na poupança? "))
+                cliente["poupanca"] += valor_deposito
+                print(f"Depósito de R${valor_deposito:.2f} realizado com sucesso na poupança de {cliente['nome']}.")
+                return
+        print("Cliente não encontrado.")
+    else:
+        return
 
 def debito():
     cpf = input("Digite o CPF do cliente: ")
@@ -85,7 +108,6 @@ def debito():
             return
     print("Cliente não encontrado.")
 
-
 def apaga_cliente():
     cpf = input("Digite o CPF do cliente que deseja apagar: ")
     for cliente in clientes:
@@ -100,8 +122,6 @@ def apaga_cliente():
                 print("Operação cancelada.")
                 return
     print("Cliente não encontrado.")
-
-
 
 def transferencia():
     cpf_origem = input("Digite o CPF do cliente que irá transferir: ")
@@ -141,8 +161,6 @@ def transferencia():
             return
     print("Cliente de origem não encontrado.")
 
-
-
 def deposito():
     cpf = input("Digite o CPF do cliente: ")
     for cliente in clientes:
@@ -158,13 +176,12 @@ def deposito():
             print(f"Depósito de R${valor_deposito:.2f} realizado com sucesso na conta de {cliente['nome']}.")
             return
     print("Cliente não encontrado.")
-
     
 #FUNÇÃO MENU PRINCIPAL
 def menu():
     while True:
         print("BEM VINDO AO BANCO TISTRESA: ")
-        opcao = int(input("1. Registrar Cliente\n2. Apagar Cliente\n3. Mostrar Clientes\n4. Débito\n5. Depósito\n6. Extrato\n7. Transferência\n8. Operação livre\n9. Sair\n"))
+        opcao = int(input("1. Registrar Cliente\n2. Apagar Cliente\n3. Mostrar Clientes\n4. Débito\n5. Depósito\n6. Extrato\n7. Transferência\n8. Poupança\n9. Sair\n"))
         # Verifica a opção selecionada
         if opcao == 1:
             cadastro()
@@ -186,7 +203,7 @@ def menu():
         elif opcao == 7:
             transferencia()
         elif opcao == 8:
-            operacao_livre()
+            deposito_poupanca()
         elif opcao == 9:
             print("Obrigado por usar nosso banco")
             break
