@@ -9,6 +9,16 @@ def cadastro():
     nome = input("Qual seu nome? ")
     cpf = input("Qual seu CPF? Ex: 123.456.789-10 ")
     conta = input("Qual tipo de conta? Comum ou Plus? ")
+    if conta.lower() == "comum" or "c":
+        limite_negativo = -1000.0
+        taxa_debito = 0.05
+    elif conta.lower() == "plus" or "p":
+        limite_negativo = -5000.0
+        taxa_debito = 0.03
+    else:
+        print("Tipo de conta inválido. Usando conta comum por padrão.")
+        limite_negativo = -1000.0
+        taxa_debito = 0.05
     deposito = float(input("Qual o depósito inicial? "))
     senha = input("Crie uma senha: ")
 
@@ -74,6 +84,10 @@ def listar_clientes():
         print(f"Nome: {x['nome']}, CPF: {x['cpf']}, Tipo de conta: {x['tipo conta']}, Saldo: R${x['deposito']:.2f}")
 
 def deposito_poupanca():
+    cliente = autenticar()
+    if cliente is None:
+        print("CPF ou senha invalidas")
+        return
     print("A poupança rende 1%% ao mês")
     continuar = input("Deseja continuar? Sim/Não\n")
     if continuar.upper() == "SIM":
@@ -91,22 +105,33 @@ def deposito_poupanca():
 def debito():
     cpf = input("Digite o CPF do cliente: ")
     cliente = autenticar()
+    if cliente is None:
+        print("CPF ou senha invalidas")
+        return
     for cliente in clientes:
         if cliente["cpf"] == cpf:
             valor_debito = float(input("Qual o valor a ser debitado? "))
-            if valor_debito > cliente["deposito"]:
-                print("Saldo insuficiente.")
-            else:
+            # Verificar o tipo de conta e aplicar taxa de débito correspondente
+            if cliente["tipo conta"].lower() == "comum":
+                valor_debito += valor_debito * 0.05
+            elif cliente["tipo conta"].lower() == "plus":
+                valor_debito += valor_debito * 0.03
+
+            # Verificar limite de saldo negativo
+            if cliente["deposito"] - valor_debito >= -1000.0:
                 cliente["deposito"] -= valor_debito
                 registro = {
                     "tipo": "DEBITO",
                     "valor": valor_debito,
-                    "horario": datetime.now()  # Armazena o horário da transação
+                    "horario": datetime.now()
                 }
-                cliente["historico"].append(registro)  # Registra a transação no histórico do cliente
+                cliente["historico"].append(registro)
                 print(f"Débito de R${valor_debito:.2f} realizado com sucesso na conta de {cliente['nome']}.")
+            else:
+                print("Saldo insuficiente. Limite de saldo negativo excedido.")
             return
     print("Cliente não encontrado.")
+
 
 def apaga_cliente():
     cpf = input("Digite o CPF do cliente que deseja apagar: ")
@@ -129,7 +154,6 @@ def transferencia():
     if cliente_origem is None:
         print("Cliente de origem não autenticado.")
         return
-    
     for cliente_destino in clientes:
         if cliente_destino["cpf"] == cpf_origem:
             cpf_destino = input("Digite o CPF do destinatário: ")
@@ -162,6 +186,10 @@ def transferencia():
     print("Cliente de origem não encontrado.")
 
 def deposito():
+    cliente = autenticar()
+    if cliente is None:
+        print("CPF ou senha invalidas")
+        return
     cpf = input("Digite o CPF do cliente: ")
     for cliente in clientes:
         if cliente["cpf"] == cpf:
@@ -185,8 +213,8 @@ def menu():
         # Verifica a opção selecionada
         if opcao == 1:
             cadastro()
-            fim = input("Deseja Sair? S/N ")
-            if fim.upper() == "S":
+            fim = input("Deseja voltar o menu inicial?\nSim ou Não\n ")
+            if fim.upper() == "NÃO" or fim.upper() == "N" or fim.upper() == "NAO":
                 print(clientes)
                 print("Obrigado por usar nosso banco")
                 break
