@@ -1,5 +1,5 @@
-import pickle
-from datetime import datetime
+import pickle #Para controlar melhor os dados salvos nos arquivos, meio que codifica
+from datetime import datetime #importa data e hora principalmente para o extrato
 
 # Lista para armazenar os clientes
 clientes = []
@@ -7,17 +7,16 @@ clientes = []
 # Função para carregar os clientes de um arquivo
 def carregar_clientes():
     try:
-        with open("Banana.txt", "rb") as file:
-            clientes = pickle.load(file)
-    except FileNotFoundError:
+        with open("arquivo_banco.txt", "rb") as file: #Abre o arquivo pedido em modo read
+            clientes = pickle.load(file) #Descodifica em pickle
+    except FileNotFoundError: #Caso não tenha clientes, retorne a lista clientes
         clientes = []
     return clientes
 
-
 # Função para salvar os clientes em um arquivo
 def salvar_clientes():
-    with open("Banana.txt", "wb") as file:
-        pickle.dump(clientes, file)
+    with open("arquivo_banco.txt", "wb") as file: #abre o arquivo em modo write
+        pickle.dump(clientes, file) #Codifica em pickle
 
 # Carrega os clientes do arquivo
 clientes = carregar_clientes()
@@ -28,16 +27,14 @@ def cadastro():
     nome = input("Qual seu nome? ")
     cpf = input("Qual seu CPF? Ex: 123.456.789-10 ")
     conta = input("Qual tipo de conta? Comum ou Plus? ")
-    if conta.lower() == "comum" or "c":
+    if conta.lower() == "comum" or "c": #Se o cliente digitar comum, vai ter um limite e uma taxa de debito só para ele
         limite_negativo = -1000.0
         taxa_debito = 0.05
-    elif conta.lower() == "plus" or "p":
+    elif conta.lower() == "plus" or "p": #Se o cliente digitar plus, vai ter um limite e uma taxa de debito só para ele
         limite_negativo = -5000.0
         taxa_debito = 0.03
     else:
-        print("Tipo de conta inválido. Usando conta comum por padrão.")
-        limite_negativo = -1000.0
-        taxa_debito = 0.05
+       return
     deposito = float(input("Qual o depósito inicial? "))
     senha = input("Crie uma senha: ")
 
@@ -101,12 +98,12 @@ def calcular_rendimento(cliente):
 # Função para listar os clientes cadastrados
 def listar_clientes():
     print("Lista de clientes cadastrados:")
-    for x in clientes:
+    for x in clientes: #Dentro da lista clientes, vai aparecer todas as bibliotecas (usuários)
         print(f"Nome: {x['nome']}, CPF: {x['cpf']}, Tipo de conta: {x['tipo conta']}, Saldo: R${x['deposito']:.2f}")
 
 def deposito_poupanca():
-    cliente = autenticar()
-    if cliente is None:
+    cliente = autenticar() #Para o cliente conseguir fazer o deposito na poupança, tem que colocar cpf e senha
+    if cliente is None: #Se a senha ou CPF não existir
         print("CPF ou senha invalidas")
         return
     print("A poupança rende 1%% ao mês")
@@ -114,9 +111,9 @@ def deposito_poupanca():
     if continuar.upper() == "SIM":
         cpf = input("Digite o CPF do cliente: ")
         for cliente in clientes:
-            if cliente["cpf"] == cpf:
+            if cliente["cpf"] == cpf: #Vai selecionar o CPF citado
                 valor_deposito = float(input("Qual o valor a ser depositado na poupança? "))
-                cliente["poupanca"] += valor_deposito
+                cliente["poupanca"] += valor_deposito #O valor colocado vai ser adicionado o que já tem na poupança que originalment é 0 (valor que tinha = valor que tinha + valor do deposito)
                 print(f"Depósito de R${valor_deposito:.2f} realizado com sucesso na poupança de {cliente['nome']}.")
                 return
         print("Cliente não encontrado.")
@@ -125,26 +122,26 @@ def deposito_poupanca():
 
 def debito():
     cpf = input("Digite o CPF do cliente: ")
-    cliente = autenticar()
+    cliente = autenticar() #Confere CPF e senha antes de continuar
     if cliente is None:
         print("CPF ou senha invalidas")
         return
     for cliente in clientes:
-        if cliente["cpf"] == cpf:
+        if cliente["cpf"] == cpf: #Procura o CPF digitado na lista clientes
             valor_debito = float(input("Qual o valor a ser debitado? "))
             # Verificar o tipo de conta e aplicar taxa de débito correspondente
             if cliente["tipo conta"].lower() == "comum":
-                valor_debito += valor_debito * 0.05
+                valor_debito += valor_debito * 0.05      #Valor que a pessoa digitou + o valor que ela digitou * a taxa
             elif cliente["tipo conta"].lower() == "plus":
-                valor_debito += valor_debito * 0.03
+                valor_debito += valor_debito * 0.03      #Valor que a pessoa digitou + o valor que ela digitou * a taxa
 
             # Verificar limite de saldo negativo
             if cliente["deposito"] - valor_debito >= -1000.0:
                 cliente["deposito"] -= valor_debito
                 registro = {
                     "tipo": "DEBITO",
-                    "valor": valor_debito,
-                    "horario": datetime.now()
+                    "valor": valor_debito, #Altera o valor 
+                    "horario": datetime.now() #Coloca o horário que ocorreu
                 }
                 cliente["historico"].append(registro)
                 print(f"Débito de R${valor_debito:.2f} realizado com sucesso na conta de {cliente['nome']}.")
@@ -153,12 +150,11 @@ def debito():
             return
     print("Cliente não encontrado.")
 
-
 def apaga_cliente():
     cpf = input("Digite o CPF do cliente que deseja apagar: ")
-    for cliente in clientes:
+    for cliente in clientes: #Dentro da lista clientes
         if cliente["cpf"] == cpf:
-            nome = cliente["nome"]
+            nome = cliente["nome"] #Para aparecer o nome da pessa na mensagem
             confirmacao = input(f"Tem certeza que deseja apagar o cliente {nome}? (S/N) ")
             if confirmacao.upper() == "S":
                 clientes.remove(cliente)  # Remove o cliente da lista de clientes
@@ -171,7 +167,7 @@ def apaga_cliente():
 
 def transferencia():
     cpf_origem = input("Digite o CPF do cliente que irá transferir: ")
-    cliente_origem = autenticar()
+    cliente_origem = autenticar() #Confere senha e CPF do cliente
     if cliente_origem is None:
         print("Cliente de origem não autenticado.")
         return
@@ -207,15 +203,15 @@ def transferencia():
     print("Cliente de origem não encontrado.")
 
 def deposito():
-    cliente = autenticar()
+    cliente = autenticar() #Confere o CPF e a senha
     if cliente is None:
         print("CPF ou senha invalidas")
         return
     cpf = input("Digite o CPF do cliente: ")
     for cliente in clientes:
-        if cliente["cpf"] == cpf:
+        if cliente["cpf"] == cpf: #Procura a biblioteca que tem o CPF selecionado
             valor_deposito = float(input("Qual o valor a ser depositado? "))
-            cliente["deposito"] += valor_deposito
+            cliente["deposito"] += valor_deposito #O valor que está no deposito + ele mesmo + o valor digitado
             registro = {
                 "tipo": "DEPOSITO",
                 "valor": valor_deposito,
@@ -225,15 +221,17 @@ def deposito():
             print(f"Depósito de R${valor_deposito:.2f} realizado com sucesso na conta de {cliente['nome']}.")
             return
     print("Cliente não encontrado.")
+#Mostra as taxas do banco
+def instrução():
+    print("BEM VINDO AO BANCO ECONÔMICO:\nNossas taxas da conta comum e plus são respectivamente:\nLimite negativo: 1000.00 e 5000.00\nTaxa de débito:0.5 e 0.3\nA poupança é 100%% segura e rende 1%%a.m\nSEMPRE SELECIONE 9 PARA SAIR E SALVAR SEUS DADOS\nAgradecemos sua escolha ;)")
+    return
 
-    
-    
 #FUNÇÃO MENU PRINCIPAL
 def menu():
-    clientes = carregar_clientes()
+    clientes = carregar_clientes() #Carrega o arquivo primeiro
     while True:
-        print("BEM VINDO AO BANCO TISTRESA: ")
-        opcao = int(input("1. Registrar Cliente\n2. Apagar Cliente\n3. Mostrar Clientes\n4. Débito\n5. Depósito\n6. Extrato\n7. Transferência\n8. Poupança\n9. Sair\n"))
+        print("BEM VINDO AO BANCO ECONÔMICO: ")
+        opcao = int(input("1. Registrar Cliente\n2. Apagar Cliente\n3. Mostrar Clientes\n4. Débito\n5. Depósito\n6. Extrato\n7. Transferência\n8. Poupança\n9. Salvar/Sair\n10. Taxas\nSalve antes de sair (aperte 9)\nOPÇÃO = "))
         # Verifica a opção selecionada
         if opcao == 1:
             cadastro()
@@ -260,7 +258,10 @@ def menu():
             salvar_clientes()
             print("Obrigado por usar nosso banco")
             break
+        elif opcao == 10:
+            instrução()
         else:
             print("Opção inválida. Tente novamente.")
+            
 
 menu()
