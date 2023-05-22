@@ -15,7 +15,7 @@ def carregar_clientes():
 
 # Função para salvar os clientes em um arquivo
 def salvar_clientes():
-    with open("arquivo_banco.txt", "wb") as file: #abre o arquivo em modo write
+    with open("arquivo_banco.txt", "wb") as file: # Abre o arquivo em modo write
         pickle.dump(clientes, file) #Codifica em pickle
 
 # Carrega os clientes do arquivo
@@ -27,10 +27,10 @@ def cadastro():
     nome = input("Qual seu nome? ")
     cpf = input("Qual seu CPF? Ex: 123.456.789-10 ")
     conta = input("Qual tipo de conta? Comum ou Plus? ")
-    if conta.lower() == "comum" or "c": #Se o cliente digitar comum, vai ter um limite e uma taxa de debito só para ele
+    if conta.lower() == "comum" or "c": # Se o cliente digitar comum, vai ter um limite e uma taxa de debito só para ele
         limite_negativo = -1000.0
         taxa_debito = 0.05
-    elif conta.lower() == "plus" or "p": #Se o cliente digitar plus, vai ter um limite e uma taxa de debito só para ele
+    elif conta.lower() == "plus" or "p": # Se o cliente digitar plus, vai ter um limite e uma taxa de debito só para ele
         limite_negativo = -5000.0
         taxa_debito = 0.03
     else:
@@ -61,7 +61,7 @@ def autenticar():
     cpf = input("Digite seu CPF: ")
     senha = input("Digite sua senha: ")
     for cliente in clientes:
-        if cliente["cpf"] == cpf and cliente["senha"] == senha:
+        if cliente["cpf"] == cpf and cliente["senha"] == senha: #Se na bibiloteca selecionada pela CPF for igual ao da senha retorna o cliente
             return cliente
     return None
 
