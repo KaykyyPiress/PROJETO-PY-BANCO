@@ -1,7 +1,26 @@
+import pickle
 from datetime import datetime
 
 # Lista para armazenar os clientes
 clientes = []
+
+# Função para carregar os clientes de um arquivo
+def carregar_clientes():
+    try:
+        with open("Banana.txt", "rb") as file:
+            clientes = pickle.load(file)
+    except FileNotFoundError:
+        clientes = []
+    return clientes
+
+
+# Função para salvar os clientes em um arquivo
+def salvar_clientes():
+    with open("Banana.txt", "wb") as file:
+        pickle.dump(clientes, file)
+
+# Carrega os clientes do arquivo
+clientes = carregar_clientes()
 
 # Função para cadastrar um novo cliente
 def cadastro():
@@ -36,6 +55,8 @@ def cadastro():
     # Adiciona o dicionário 'pessoa' na lista 'clientes'
     clientes.append(pessoa)
     print(pessoa)
+    salvar_clientes()
+
     print("Registrado com sucesso!")
 
 # Função para autenticar um cliente
@@ -204,9 +225,12 @@ def deposito():
             print(f"Depósito de R${valor_deposito:.2f} realizado com sucesso na conta de {cliente['nome']}.")
             return
     print("Cliente não encontrado.")
+
+    
     
 #FUNÇÃO MENU PRINCIPAL
 def menu():
+    clientes = carregar_clientes()
     while True:
         print("BEM VINDO AO BANCO TISTRESA: ")
         opcao = int(input("1. Registrar Cliente\n2. Apagar Cliente\n3. Mostrar Clientes\n4. Débito\n5. Depósito\n6. Extrato\n7. Transferência\n8. Poupança\n9. Sair\n"))
@@ -233,6 +257,7 @@ def menu():
         elif opcao == 8:
             deposito_poupanca()
         elif opcao == 9:
+            salvar_clientes()
             print("Obrigado por usar nosso banco")
             break
         else:
