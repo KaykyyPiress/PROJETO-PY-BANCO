@@ -5,7 +5,7 @@ from datetime import datetime #importa data e hora principalmente para o extrato
 clientes = []
 
 # Função para carregar os clientes de um arquivo
-def carregar_clientes():
+def carregar_arquivo():
     try:
         with open("arquivo_banco.txt", "rb") as file: #Abre o arquivo pedido em modo read
             clientes = pickle.load(file) #Descodifica em pickle
@@ -14,12 +14,12 @@ def carregar_clientes():
     return clientes
 
 # Função para salvar os clientes em um arquivo
-def salvar_clientes():
+def salvar_dados():
     with open("arquivo_banco.txt", "wb") as file: # Abre o arquivo em modo write
         pickle.dump(clientes, file) #Codifica em pickle
 
 # Carrega os clientes do arquivo
-clientes = carregar_clientes()
+clientes = carregar_arquivo()
 
 # Função para cadastrar um novo cliente
 def cadastro():
@@ -52,22 +52,25 @@ def cadastro():
     # Adiciona o dicionário 'pessoa' na lista 'clientes'
     clientes.append(pessoa)
     print(pessoa)
-    salvar_clientes()
+    salvar_dados()
 
     print("Registrado com sucesso!")
 
-# Função para autenticar um cliente
-def autenticar():
+# Função para conferencia_dos_dados um cliente
+def conferencia_dos_dados():
     cpf = input("Digite seu CPF: ")
     senha = input("Digite sua senha: ")
     for cliente in clientes:
         if cliente["cpf"] == cpf and cliente["senha"] == senha: #Se na bibiloteca selecionada pela CPF for igual ao da senha retorna o cliente
             return cliente
+        else:
+            print("Senha ou CPF inválido, tente novamente")
+            return
     return None
 
 # Função para exibir o extrato de um cliente
 def extrato():
-    cliente = autenticar()
+    cliente = conferencia_dos_dados()
     if cliente is None:
         print("CPF ou senha inválidos. Tente novamente.")
         return
@@ -85,30 +88,30 @@ def extrato():
         elif tipo == 'TRANSFERENCIA':
             destino = acontecimento['destino']
             print(f"Transferência para {destino} no valor de R${valor:.2f} em {horario}")
-    rendimento = calcular_rendimento(cliente)
+    rendimento = cauculo_do_rendimento(cliente)
     print(f"Rendimento da poupança neste mês: R${rendimento:.2f}")
 
 # Função para realizar operações livres
-def calcular_rendimento(cliente):
+def cauculo_do_rendimento(cliente):
     taxa_rendimento = 0.01  # Taxa de rendimento da poupança (1% ao mês)
     rendimento = cliente["poupanca"] * taxa_rendimento
     cliente["poupanca"] += rendimento
     return rendimento
 
 # Função para listar os clientes cadastrados
-def listar_clientes():
-    print("Lista de clientes cadastrados:")
+def mostrar_clientes():
+    print("Clientes cadastrados:")
     for x in clientes: #Dentro da lista clientes, vai aparecer todas as bibliotecas (usuários)
         print(f"Nome: {x['nome']}, CPF: {x['cpf']}, Tipo de conta: {x['tipo conta']}, Saldo: R${x['deposito']:.2f}")
 
-def deposito_poupanca():
-    cliente = autenticar() #Para o cliente conseguir fazer o deposito na poupança, tem que colocar cpf e senha
+def poupanca():
+    cliente = conferencia_dos_dados() #Para o cliente conseguir fazer o deposito na poupança, tem que colocar cpf e senha
     if cliente is None: #Se a senha ou CPF não existir
         print("CPF ou senha invalidas")
         return
     print("A poupança rende 1%% ao mês")
-    continuar = input("Deseja continuar? Sim/Não\n")
-    if continuar.upper() == "SIM":
+    continuar = input("Deseja prosseguir? Sim/Não\n")
+    if continuar.lower() == "sim" or "s":
         cpf = input("Digite o CPF do cliente: ")
         for cliente in clientes:
             if cliente["cpf"] == cpf: #Vai selecionar o CPF citado
@@ -122,7 +125,7 @@ def deposito_poupanca():
 
 def debito():
     cpf = input("Digite o CPF do cliente: ")
-    cliente = autenticar() #Confere CPF e senha antes de continuar
+    cliente = conferencia_dos_dados() #Confere CPF e senha antes de continuar
     if cliente is None:
         print("CPF ou senha invalidas")
         return
@@ -134,7 +137,6 @@ def debito():
                 valor_debito += valor_debito * 0.05      #Valor que a pessoa digitou + o valor que ela digitou * a taxa
             elif cliente["tipo conta"].lower() == "plus":
                 valor_debito += valor_debito * 0.03      #Valor que a pessoa digitou + o valor que ela digitou * a taxa
-
             # Verificar limite de saldo negativo
             if cliente["deposito"] - valor_debito >= -1000.0:
                 cliente["deposito"] -= valor_debito
@@ -150,13 +152,13 @@ def debito():
             return
     print("Cliente não encontrado.")
 
-def apaga_cliente():
+def deleta_cliente():
     cpf = input("Digite o CPF do cliente que deseja apagar: ")
     for cliente in clientes: #Dentro da lista clientes
         if cliente["cpf"] == cpf:
             nome = cliente["nome"] #Para aparecer o nome da pessa na mensagem
-            confirmacao = input(f"Tem certeza que deseja apagar o cliente {nome}? (S/N) ")
-            if confirmacao.upper() == "S":
+            confirmacao = input(f"Tem certeza que deseja apagar o cliente {nome}? Sim ou Não? ")
+            if confirmacao.lower() == "sim" or "s":
                 clientes.remove(cliente)  # Remove o cliente da lista de clientes
                 print("Cliente removido com sucesso!")
                 return
@@ -167,7 +169,7 @@ def apaga_cliente():
 
 def transferencia():
     cpf_origem = input("Digite o CPF do cliente que irá transferir: ")
-    cliente_origem = autenticar() #Confere senha e CPF do cliente
+    cliente_origem = conferencia_dos_dados() #Confere senha e CPF do cliente
     if cliente_origem is None:
         print("Cliente de origem não autenticado.")
         return
@@ -203,7 +205,7 @@ def transferencia():
     print("Cliente de origem não encontrado.")
 
 def deposito():
-    cliente = autenticar() #Confere o CPF e a senha
+    cliente = conferencia_dos_dados() #Confere o CPF e a senha
     if cliente is None:
         print("CPF ou senha invalidas")
         return
@@ -221,6 +223,7 @@ def deposito():
             print(f"Depósito de R${valor_deposito:.2f} realizado com sucesso na conta de {cliente['nome']}.")
             return
     print("Cliente não encontrado.")
+    
 #Mostra as taxas do banco
 def instrução():
     print("BEM VINDO AO BANCO ECONÔMICO:\nNossas taxas da conta comum e plus são respectivamente:\nLimite negativo: 1000.00 e 5000.00\nTaxa de débito:0.5 e 0.3\nA poupança é 100%% segura e rende 1%%a.m\nSEMPRE SELECIONE 9 PARA SAIR E SALVAR SEUS DADOS\nAgradecemos sua escolha ;)")
@@ -228,7 +231,7 @@ def instrução():
 
 #FUNÇÃO MENU PRINCIPAL
 def menu():
-    clientes = carregar_clientes() #Carrega o arquivo primeiro
+    clientes = carregar_arquivo() #Carrega o arquivo primeiro
     while True:
         print("BEM VINDO AO BANCO ECONÔMICO: ")
         opcao = int(input("1. Registrar Cliente\n2. Apagar Cliente\n3. Mostrar Clientes\n4. Débito\n5. Depósito\n6. Extrato\n7. Transferência\n8. Poupança\n9. Salvar/Sair\n10. Taxas\nSalve antes de sair (aperte 9)\nOPÇÃO = "))
@@ -236,14 +239,14 @@ def menu():
         if opcao == 1:
             cadastro()
             fim = input("Deseja voltar o menu inicial?\nSim ou Não\n ")
-            if fim.upper() == "NÃO" or fim.upper() == "N" or fim.upper() == "NAO":
+            if fim.lower() == "não" or "n" or "nao":
                 print(clientes)
                 print("Obrigado por usar nosso banco")
                 break
         elif opcao == 2:
-            apaga_cliente()
+            deleta_cliente()
         elif opcao == 3:
-            listar_clientes()
+            mostrar_clientes()
         elif opcao == 4:
             debito()
         elif opcao == 5:
@@ -253,9 +256,9 @@ def menu():
         elif opcao == 7:
             transferencia()
         elif opcao == 8:
-            deposito_poupanca()
+            poupanca()
         elif opcao == 9:
-            salvar_clientes()
+            salvar_dados()
             print("Obrigado por usar nosso banco")
             break
         elif opcao == 10:
