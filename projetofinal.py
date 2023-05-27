@@ -61,13 +61,8 @@ def cadastro():
     salvar_dados()
     print("Cadastrado com sucesso!")
 
-    senha = input("Digite sua senha: ")
-    for cliente in clientes:
-        if cliente["cpf"] == cpf and cliente["senha"] == senha: # Se dentro da biblioteca que tiver aquele CPF tiver aquela senha, autoriza
-            return cliente
-    print("Senha ou CPF inválido, tente novamente") # Se não tiver retorna
-    return None
 
+#Função que cria um login
 def autenticar_usuarios(cpf, senha): # Pega a variável cpf e senha que a pessoa digitar e procura nas bibliotecas
     for cliente in clientes:
         if cliente["cpf"] == cpf and cliente["senha"] == senha: # Procura se o CPF digitado e a senha são da mesma bilbioteca
@@ -248,15 +243,15 @@ def deposito():
 
 #Mostra as taxas do banco
 def instrução():
-    print("BEM VINDO AO BANCO ECONÔMICO:\nNossas taxas da conta comum e plus são respectivamente:\nLimite negativo: 1000.00 e 5000.00\nTaxa de débito:0.5 e 0.3\nA poupança é 100%% segura e rende 1%%a.m\nSEMPRE SELECIONE 9 PARA SAIR E SALVAR SEUS DADOS\nAgradecemos sua escolha ;)")
+    print("BEM VINDO AO BANCO QuemPoupaTem:\nNossas taxas da conta comum e plus são respectivamente:\nLimite negativo: 1000.00 e 5000.00\nTaxa de débito:0.5 e 0.3\nA poupança é 100'%' segura e rende 1'%'a.m\nAgradecemos sua escolha ;)")
     return
 
 #FUNÇÃO MENU PRINCIPAL
 def menu():
     clientes = carregar_arquivo() #Carrega o arquivo primeiro
     while True:
-        print("BEM VINDO AO BANCO ECONÔMICO: ")
-        opcao = int(input("1. Registrar Cliente\n2. Apagar Cliente\n3. Mostrar Clientes\n4. Débito\n5. Depósito\n6. Extrato\n7. Transferência\n8. Poupança\n9. Salvar/Sair\n10. Taxas\nSalve antes de sair (aperte 9)\nOPÇÃO = "))
+        print("BEM VINDO AO BANCO QuemPoupaTem: ")
+        opcao = int(input("1. Registrar Cliente\n2. Apagar Cliente\n3. Mostrar Clientes\n4. Débito\n5. Depósito\n6. Extrato\n7. Transferência\n8. Poupança\n9. Salvar/Sair\n10. Taxas\nOPÇÃO = "))
         # Verifica a opção selecionada
         if opcao == 1:
             cadastro()
